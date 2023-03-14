@@ -14,5 +14,12 @@
       <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.locationtech.proj4j</groupId>
+      <artifactId>proj4j</artifactId>
+      <version>1.2.3</version>
+    </dependency>
   </dependencies>
+
+
 </project>

@@ -1,7 +1,6 @@
 package Views;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -23,13 +22,32 @@ public class HomeView extends JFrame {
      * Create the frame.
      */
     public HomeView() {
-        setTitle("Optimisation de tournées de livraison");
+        createWindow("MealRun");
+        drawMap();
+        //this.pack();
+    }
+
+    public void createWindow(String nameApp){
+        setTitle(nameApp);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 450, 300);
+
+        // Obtenir la taille de l'écran
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gd = ge.getDefaultScreenDevice();
+        int screenWidth = gd.getDisplayMode().getWidth();
+        int screenHeight = gd.getDisplayMode().getHeight();
+
+        // Définir la taille du JFrame en fonction de la taille de l'écran
+        setSize(screenWidth, screenHeight);
+
         contentPane = new JPanel();
-        contentPane.setLayout(new BorderLayout(0, 0));
+        contentPane.setLayout(new BorderLayout(15, 15));
         setContentPane(contentPane);
 
+        // Créer un JPanel pour contenir les boutons
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
+
+        //BTN MAP
         btnLoadMap = new JButton("Charger la carte");
         btnLoadMap.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -45,8 +63,9 @@ public class HomeView extends JFrame {
                 }
             }
         });
-        contentPane.add(btnLoadMap, BorderLayout.NORTH);
+        buttonPanel.add(btnLoadMap);
 
+        //BTN LIVRAISON
         btnLoadRequests = new JButton("Charger les demandes");
         btnLoadRequests.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -62,7 +81,19 @@ public class HomeView extends JFrame {
                 }
             }
         });
-        contentPane.add(btnLoadRequests, BorderLayout.CENTER);
+        buttonPanel.add(btnLoadRequests);
+
+        contentPane.add(buttonPanel, BorderLayout.NORTH);
+    }
+    public void drawMap(){
+        //JPanel mapPanel = new JPanel(new GridLayout(15, 1));
+
+        MapView map = new MapView();
+        map.setVisible(true);
+        //mapPanel.add(map);
+        //mapPanel.add(map);
+
+        contentPane.add(map);
     }
 
     public static void main(String[] args) {
