@@ -1,6 +1,7 @@
 package Views;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.locationtech.proj4j.CoordinateReferenceSystem;
+import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
@@ -25,25 +27,49 @@ public class MapView extends JPanel {
     private static final String WGS84 = "EPSG:4326"; // système de coordonnées géographiques WGS84
     private static final String UTM30N = "EPSG:32630"; // système de coordonnées UTM 30N
 
+    private static double minLatitude = 0d;
+    private static double minLongitude = 0d;
+    private static double maxLatitude = 0d;
+    private static double maxLongitude = 0d;
+
     public MapView() {
         // Parse the XML file and extract the intersection and segment data
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse("C:\\Users\\jibri\\OneDrive - INSA Lyon\\INSA4IFA\\S2\\PLD AGILE\\PLD-Agile\\fichiersXML2022\\smallMap.xml");
+            Document doc = dBuilder.parse("D:\\INSA\\PLD-Agile\\fichiersXML2022\\largeMap.xml");
             doc.getDocumentElement().normalize();
 
 
-            CRSFactory factory = new CRSFactory();
-            CoordinateReferenceSystem sourceCRS = factory.createFromName(WGS84);
-            CoordinateReferenceSystem targetCRS = factory.createFromName(UTM30N);
+            //this.setPreferredSize(new Dimension(1000, 1000));
+
 
             // Extract the intersection data
             NodeList intersectionList = doc.getElementsByTagName("intersection");
+
+            minLatitude = Double.MAX_VALUE;
+            minLongitude = Double.MAX_VALUE;
+            maxLatitude = Double.MIN_VALUE;
+            maxLongitude = Double.MIN_VALUE;
+
             for (int i = 0; i < intersectionList.getLength(); i++) {
                 Element intersection = (Element) intersectionList.item(i);
                 double latitude = Double.parseDouble(intersection.getAttribute("latitude"));
                 double longitude = Double.parseDouble(intersection.getAttribute("longitude"));
+                if(latitude > maxLatitude){
+                    maxLatitude = latitude;
+                }
+                if(latitude < minLatitude){
+                    minLatitude = latitude;
+                }
+                if(longitude > maxLongitude){
+                    maxLongitude = longitude;
+                }
+                if(longitude < minLongitude){
+                    minLongitude = longitude;
+                }
+
+
                 long id = Long.parseLong(intersection.getAttribute("id"));
                 ProjCoordinate sourceCoord = new ProjCoordinate(longitude, latitude);
 
@@ -52,6 +78,12 @@ public class MapView extends JPanel {
 
             }
 
+            double ecartLat = maxLatitude - minLatitude;
+            double ecartLong = maxLongitude - minLongitude;
+            for(Intersection intersection : intersections){
+                intersection.setX((intersection.getLongitude() - minLongitude) * 500 / ecartLong);
+                intersection.setY((intersection.getLatitude() - minLatitude) * 500 / ecartLat);
+            }
             // Extract the segment data
             NodeList segmentList = doc.getElementsByTagName("segment");
             for (int i = 0; i < segmentList.getLength(); i++) {
@@ -90,9 +122,11 @@ public class MapView extends JPanel {
         Graphics2D g2d = (Graphics2D) g.create();
         // Set the background color of the panel
         setBackground(Color.LIGHT_GRAY);
+        //AffineTransform oldTransform = g2d.getTransform();
+
 
         // Set the drawing color and thickness for the segments
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(Color.WHITE);
         g2d.setStroke(new BasicStroke(3));
 
         // Draw each segment as a line between its starting and ending points
@@ -112,38 +146,13 @@ public class MapView extends JPanel {
 
         // Draw each intersection as a filled circle centered at its location
         for (Intersection intersection : intersections) {
-            int x = (int) (intersection.getLatitude() - size/2);
-            int y = (int) (intersection.getLongitude() - size/2);
-            g2d.fillOval(x, y, size, size);
-            centerX += intersection.getLongitude();
-            centerY += intersection.getLatitude();
+            int x = (int) (intersection.getX());
+            int y = (int) (intersection.getY());
+            g2d.fillOval(x, y, 2, 2);
+            centerX += intersection.getX();
+            centerY += intersection.getY();
         }
-
-        centerX /= intersections.size();
-        centerY /= intersections.size();
-        g2d.translate(-centerX + getWidth() / 2, -centerY + getHeight() / 2);
-        double zoomFactor = 1.0 / (Math.sqrt(intersections.size()) / 10);
-        g2d.scale(zoomFactor, zoomFactor);
-
-        g2d.dispose();
     }
 
-   /* @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(500, 500);
-    }*/
 
-
-    /*public static void main(String[] args) {
-        // Create a JFrame to display the map
-        JFrame frame = new JFrame("Map");
-
-        // Create a Map panel and add it to the frame
-        MapView map = new MapView();
-        frame.add(map);
-
-        // Set the size of the frame and make it visible
-        frame.setSize(800, 600);
-        frame.setVisible(true);
-    }*/
 }

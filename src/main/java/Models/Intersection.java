@@ -30,4 +30,25 @@ public class Intersection {
     public double getX(){ return X;}
 
     public double getY(){ return Y;}
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setX(double x) {
+        X = x;
+    }
+
+    public void setY(double y) {
+        Y = y;
+    }
+
 }
