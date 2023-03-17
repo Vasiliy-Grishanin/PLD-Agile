@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -23,7 +24,7 @@ public class HomeView extends JFrame {
      */
     public HomeView() {
         createWindow("MealRun");
-        drawMap();
+
         //this.pack();
     }
 
@@ -58,8 +59,14 @@ public class HomeView extends JFrame {
                 int result = fileChooser.showOpenDialog(contentPane);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    // Traite le fichier sélectionné
-                    System.out.println("Carte chargée : " + selectedFile.getAbsolutePath());
+                    try {
+                        String absolutePath = selectedFile.getCanonicalPath();
+                        System.out.println("Chemin absolu : " + absolutePath);
+                        drawMap(absolutePath);
+                    } catch (IOException ex) {
+                        System.err.println("Erreur lors de la récupération du chemin absolu : " + ex.getMessage());
+                    }
+
                 }
             }
         });
@@ -85,16 +92,17 @@ public class HomeView extends JFrame {
 
         contentPane.add(buttonPanel, BorderLayout.NORTH);
     }
-    public void drawMap(){
+    public void drawMap(String xmlFilePath){
         //JPanel mapPanel = new JPanel(new GridLayout(40, 1));
-
-        MapView map = new MapView();
-        map.setVisible(true);
-        //mapPanel.add(map);
-        //mapPanel.add(map);
-        //map.setPreferredSize(new Dimension(500, 500));
-        ///this.pack();
-        contentPane.add(map);
+        if (xmlFilePath != null) {
+            MapView map = new MapView(xmlFilePath);
+            map.setVisible(true);
+            //mapPanel.add(map);
+            //mapPanel.add(map);
+            //map.setPreferredSize(new Dimension(500, 500));
+            ///this.pack();
+            contentPane.add(map);
+        }
     }
 
     /*public static void main(String[] args) {

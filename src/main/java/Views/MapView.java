@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import java.io.File;
 
 import Models.Intersection;
 import Models.Segment;
@@ -32,12 +33,13 @@ public class MapView extends JPanel {
     private static double maxLatitude = 0d;
     private static double maxLongitude = 0d;
 
-    public MapView() {
+    public MapView(String xmlFilePath) {
         // Parse the XML file and extract the intersection and segment data
         try {
+            File file = new File(xmlFilePath);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse("D:\\INSA\\PLD-Agile\\fichiersXML2022\\largeMap.xml");
+            Document doc = dBuilder.parse(file.getAbsolutePath());
             doc.getDocumentElement().normalize();
 
 
