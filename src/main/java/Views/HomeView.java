@@ -59,13 +59,10 @@ public class HomeView extends JFrame {
                 int result = fileChooser.showOpenDialog(contentPane);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    try {
-                        String absolutePath = selectedFile.getCanonicalPath();
-                        System.out.println("Chemin absolu : " + absolutePath);
-                        drawMap(absolutePath);
-                    } catch (IOException ex) {
-                        System.err.println("Erreur lors de la récupération du chemin absolu : " + ex.getMessage());
-                    }
+                    drawMap(selectedFile);
+                    String absolutePath = selectedFile.getAbsolutePath();
+                    System.out.println("Chemin absolu : " + absolutePath);
+
 
                 }
             }
@@ -92,17 +89,17 @@ public class HomeView extends JFrame {
 
         contentPane.add(buttonPanel, BorderLayout.NORTH);
     }
-    public void drawMap(String xmlFilePath){
+    public void drawMap(File selectedFile){
         //JPanel mapPanel = new JPanel(new GridLayout(40, 1));
-        if (xmlFilePath != null) {
-            MapView map = new MapView(xmlFilePath);
-            map.setVisible(true);
-            //mapPanel.add(map);
-            //mapPanel.add(map);
-            //map.setPreferredSize(new Dimension(500, 500));
-            ///this.pack();
-            contentPane.add(map);
-        }
+
+        MapView map = new MapView(selectedFile);
+        map.setVisible(true);
+        //mapPanel.add(map);
+        //mapPanel.add(map);
+        //map.setPreferredSize(new Dimension(500, 500));
+        ///this.pack();
+        contentPane.add(map);
+
     }
 
     /*public static void main(String[] args) {

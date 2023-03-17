@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -33,13 +35,13 @@ public class MapView extends JPanel {
     private static double maxLatitude = 0d;
     private static double maxLongitude = 0d;
 
-    public MapView(String xmlFilePath) {
+    public MapView(File selectedFile) {
         // Parse the XML file and extract the intersection and segment data
         try {
-            File file = new File(xmlFilePath);
+            InputStream inputStream = new FileInputStream(selectedFile);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(file.getAbsolutePath());
+            Document doc = dBuilder.parse(inputStream);
             doc.getDocumentElement().normalize();
 
 
