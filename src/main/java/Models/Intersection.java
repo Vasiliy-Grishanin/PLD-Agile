@@ -6,15 +6,18 @@ public class Intersection {
     private double longitude;
     private double X;
     private double Y;
+    private boolean isWhareHouse;
 
-    public Intersection(long id, double latitude, double longitude, double X, double Y){
+    public Intersection(long id, double latitude, double longitude, double X, double Y, boolean isWhareHouse){
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
         this.X = X;
         this.Y =  Y;
+        this.isWhareHouse = isWhareHouse;
     }
 
+    public boolean isWhareHouse(){ return isWhareHouse; }
     public long getId(){
         return id;
     }

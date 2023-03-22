@@ -17,13 +17,15 @@ public class HomeView extends JFrame {
     private JPanel contentPane;
     private JButton btnLoadMap;
     private JButton btnLoadRequests;
+    private static boolean refreshMap = false;
+    private static MapView mapView = null;
 
     /**
      * Create the frame.
      */
     public HomeView() {
         createWindow("MealRun");
-        drawMap();
+        //drawMap();
         //this.pack();
     }
 
@@ -59,6 +61,7 @@ public class HomeView extends JFrame {
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     // Traite le fichier sélectionné
+                    drawMap(selectedFile.getAbsolutePath());
                     System.out.println("Carte chargée : " + selectedFile.getAbsolutePath());
                 }
             }
@@ -85,16 +88,24 @@ public class HomeView extends JFrame {
 
         contentPane.add(buttonPanel, BorderLayout.NORTH);
     }
-    public void drawMap(){
-        //JPanel mapPanel = new JPanel(new GridLayout(40, 1));
+    public void drawMap(String mapFilePath){
+        //JPanel mapPanel = new JPanel();
+        if(!refreshMap){
+            mapView = new MapView(mapFilePath);
+            mapView.setVisible(true);
+            contentPane.add(mapView);
+            refreshMap = true;
+        }else{
+            contentPane.remove(mapView);
+            mapView = new MapView(mapFilePath);
+            mapView.setVisible(true);
+            contentPane.add(mapView);
+        }
 
-        MapView map = new MapView();
-        map.setVisible(true);
         //mapPanel.add(map);
         //mapPanel.add(map);
         //map.setPreferredSize(new Dimension(500, 500));
         ///this.pack();
-        contentPane.add(map);
     }
 
     /*public static void main(String[] args) {

@@ -32,17 +32,27 @@ public class MapView extends JPanel {
     private static double maxLatitude = 0d;
     private static double maxLongitude = 0d;
 
-    public MapView() {
+    public static int mapHeight = 700;
+    public static int mapWidth = 700;
+
+    public MapView(String mapFilePath) {
         // Parse the XML file and extract the intersection and segment data
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse("D:\\INSA\\PLD-Agile\\fichiersXML2022\\largeMap.xml");
+            Document doc = dBuilder.parse(mapFilePath);
             doc.getDocumentElement().normalize();
+
+            intersections.clear();
+            segments.clear();
 
 
             //this.setPreferredSize(new Dimension(1000, 1000));
 
+            // Extract Wharehouse
+            NodeList wareHouseList = doc.getElementsByTagName("warehouse");
+            Element wareHouse = (Element)wareHouseList.item(0);
+            long address = Long.parseLong(wareHouse.getAttribute("address"));
 
             // Extract the intersection data
             NodeList intersectionList = doc.getElementsByTagName("intersection");
@@ -72,17 +82,24 @@ public class MapView extends JPanel {
 
                 long id = Long.parseLong(intersection.getAttribute("id"));
                 ProjCoordinate sourceCoord = new ProjCoordinate(longitude, latitude);
+                if(id == address){
+                    Intersection whareHousePoint = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y,true);
+                    intersections.add(whareHousePoint);
+                }else{
+                    Intersection point = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y,false);
+                    intersections.add(point);
+                }
 
-                Intersection point = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y);
-                intersections.add(point);
 
             }
 
+
+            // Scaling
             double ecartLat = maxLatitude - minLatitude;
             double ecartLong = maxLongitude - minLongitude;
             for(Intersection intersection : intersections){
-                intersection.setX((intersection.getLongitude() - minLongitude) * 500 / ecartLong);
-                intersection.setY((intersection.getLatitude() - minLatitude) * 500 / ecartLat);
+                intersection.setX((intersection.getLongitude() - minLongitude) * mapWidth / ecartLong);
+                intersection.setY((intersection.getLatitude() - minLatitude) * mapHeight / ecartLat);
             }
             // Extract the segment data
             NodeList segmentList = doc.getElementsByTagName("segment");
@@ -112,6 +129,7 @@ public class MapView extends JPanel {
 
                 segments.add(line);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -126,8 +144,8 @@ public class MapView extends JPanel {
 
 
         // Set the drawing color and thickness for the segments
-        g2d.setColor(Color.WHITE);
-        g2d.setStroke(new BasicStroke(3));
+        g2d.setColor(Color.BLACK);
+        g2d.setStroke(new BasicStroke(1));
 
         // Draw each segment as a line between its starting and ending points
         for (Segment segment : segments) {
@@ -135,8 +153,8 @@ public class MapView extends JPanel {
         }
 
         // Set the drawing color and size for the intersections
-        g2d.setColor(Color.RED);
-        int size = 10;
+        g2d.setColor(Color.MAGENTA);
+        int size = 50;
 
         // Déplace et agrandit l'origine pour le centre des points
         double centerX = 0.0;
@@ -146,11 +164,15 @@ public class MapView extends JPanel {
 
         // Draw each intersection as a filled circle centered at its location
         for (Intersection intersection : intersections) {
-            int x = (int) (intersection.getX());
-            int y = (int) (intersection.getY());
-            g2d.fillOval(x, y, 2, 2);
-            centerX += intersection.getX();
-            centerY += intersection.getY();
+            if(intersection.isWhareHouse()){
+                int x = (int) (intersection.getX());
+                int y = (int) (intersection.getY());
+                g2d.fillOval(x, y, 10, 10);
+                centerX += intersection.getX();
+                centerY += intersection.getY();
+                break;
+            }
+
         }
     }
 
