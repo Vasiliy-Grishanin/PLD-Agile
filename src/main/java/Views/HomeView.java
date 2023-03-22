@@ -88,18 +88,24 @@ public class HomeView extends JFrame {
         buttonPanel.add(btnLoadRequests);
 
         contentPane.add(buttonPanel, BorderLayout.NORTH);
+        repaint();
+
     }
     public void drawMap(File selectedFile){
         //JPanel mapPanel = new JPanel(new GridLayout(40, 1));
 
-        MapView map = new MapView(selectedFile);
-        map.setVisible(true);
+        //MapView map = new MapView(selectedFile);
+        //map.setVisible(true);
         //mapPanel.add(map);
         //mapPanel.add(map);
         //map.setPreferredSize(new Dimension(500, 500));
         ///this.pack();
-        contentPane.add(map);
+        //contentPane.add(map);
 
+        MapView map = new MapView(selectedFile);
+        map.setVisible(true);
+        contentPane.add(map);
+        contentPane.revalidate();
     }
 
     /*public static void main(String[] args) {

@@ -116,6 +116,8 @@ public class MapView extends JPanel {
 
                 segments.add(line);
             }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -156,6 +158,7 @@ public class MapView extends JPanel {
             centerX += intersection.getX();
             centerY += intersection.getY();
         }
+
     }
 
 
