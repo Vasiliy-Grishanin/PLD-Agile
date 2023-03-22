@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -17,15 +18,13 @@ public class HomeView extends JFrame {
     private JPanel contentPane;
     private JButton btnLoadMap;
     private JButton btnLoadRequests;
-    private static boolean refreshMap = false;
-    private static MapView mapView = null;
 
     /**
      * Create the frame.
      */
     public HomeView() {
         createWindow("MealRun");
-        //drawMap();
+
         //this.pack();
     }
 
@@ -60,9 +59,11 @@ public class HomeView extends JFrame {
                 int result = fileChooser.showOpenDialog(contentPane);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    // Traite le fichier sélectionné
-                    drawMap(selectedFile.getAbsolutePath());
-                    System.out.println("Carte chargée : " + selectedFile.getAbsolutePath());
+                    drawMap(selectedFile);
+                    String absolutePath = selectedFile.getAbsolutePath();
+                    System.out.println("Chemin absolu : " + absolutePath);
+
+
                 }
             }
         });
@@ -87,25 +88,24 @@ public class HomeView extends JFrame {
         buttonPanel.add(btnLoadRequests);
 
         contentPane.add(buttonPanel, BorderLayout.NORTH);
-    }
-    public void drawMap(String mapFilePath){
-        //JPanel mapPanel = new JPanel();
-        if(!refreshMap){
-            mapView = new MapView(mapFilePath);
-            mapView.setVisible(true);
-            contentPane.add(mapView);
-            refreshMap = true;
-        }else{
-            contentPane.remove(mapView);
-            mapView = new MapView(mapFilePath);
-            mapView.setVisible(true);
-            contentPane.add(mapView);
-        }
+        repaint();
 
+    }
+    public void drawMap(File selectedFile){
+        //JPanel mapPanel = new JPanel(new GridLayout(40, 1));
+
+        //MapView map = new MapView(selectedFile);
+        //map.setVisible(true);
         //mapPanel.add(map);
         //mapPanel.add(map);
         //map.setPreferredSize(new Dimension(500, 500));
         ///this.pack();
+        //contentPane.add(map);
+
+        MapView map = new MapView(selectedFile);
+        map.setVisible(true);
+        contentPane.add(map);
+        contentPane.revalidate();
     }
 
     /*public static void main(String[] args) {
