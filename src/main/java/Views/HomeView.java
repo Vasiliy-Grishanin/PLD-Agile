@@ -62,8 +62,6 @@ public class HomeView extends JFrame {
                     drawMap(selectedFile);
                     String absolutePath = selectedFile.getAbsolutePath();
                     System.out.println("Chemin absolu : " + absolutePath);
-
-
                 }
             }
         });

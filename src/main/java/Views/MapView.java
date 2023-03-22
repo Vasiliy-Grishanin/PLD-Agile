@@ -34,6 +34,8 @@ public class MapView extends JPanel {
     private static double minLongitude = 0d;
     private static double maxLatitude = 0d;
     private static double maxLongitude = 0d;
+    private static int heightView = 700;
+    private static int widthView = 700;
 
     public MapView(File selectedFile) {
         // Parse the XML file and extract the intersection and segment data
@@ -44,8 +46,10 @@ public class MapView extends JPanel {
             Document doc = dBuilder.parse(inputStream);
             doc.getDocumentElement().normalize();
 
-
-            //this.setPreferredSize(new Dimension(1000, 1000));
+            // Extract wareHouse
+            NodeList wareHouseList = doc.getElementsByTagName("warehouse");
+            Element wareHouse = (Element) wareHouseList.item(0);
+            long wareHouseAddress = Long.parseLong(wareHouse.getAttribute("address"));
 
 
             // Extract the intersection data
@@ -76,17 +80,20 @@ public class MapView extends JPanel {
 
                 long id = Long.parseLong(intersection.getAttribute("id"));
                 ProjCoordinate sourceCoord = new ProjCoordinate(longitude, latitude);
-
-                Intersection point = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y);
-                intersections.add(point);
-
+                if(id == wareHouseAddress){
+                    Intersection wareHousePoint = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y, true);
+                    intersections.add(wareHousePoint);
+                }else{
+                    Intersection point = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y, false);
+                    intersections.add(point);
+                }
             }
 
             double ecartLat = maxLatitude - minLatitude;
             double ecartLong = maxLongitude - minLongitude;
             for(Intersection intersection : intersections){
-                intersection.setX((intersection.getLongitude() - minLongitude) * 500 / ecartLong);
-                intersection.setY((intersection.getLatitude() - minLatitude) * 500 / ecartLat);
+                intersection.setX((intersection.getLongitude() - minLongitude) * widthView / ecartLong);
+                intersection.setY((intersection.getLatitude() - minLatitude) * heightView / ecartLat);
             }
             // Extract the segment data
             NodeList segmentList = doc.getElementsByTagName("segment");
@@ -132,8 +139,8 @@ public class MapView extends JPanel {
 
 
         // Set the drawing color and thickness for the segments
-        g2d.setColor(Color.WHITE);
-        g2d.setStroke(new BasicStroke(3));
+        g2d.setColor(Color.BLACK);
+        g2d.setStroke(new BasicStroke(1));
 
         // Draw each segment as a line between its starting and ending points
         for (Segment segment : segments) {
@@ -141,7 +148,7 @@ public class MapView extends JPanel {
         }
 
         // Set the drawing color and size for the intersections
-        g2d.setColor(Color.RED);
+        g2d.setColor(Color.MAGENTA);
         int size = 10;
 
         // Déplace et agrandit l'origine pour le centre des points
@@ -152,11 +159,14 @@ public class MapView extends JPanel {
 
         // Draw each intersection as a filled circle centered at its location
         for (Intersection intersection : intersections) {
-            int x = (int) (intersection.getX());
-            int y = (int) (intersection.getY());
-            g2d.fillOval(x, y, 2, 2);
-            centerX += intersection.getX();
-            centerY += intersection.getY();
+            if(intersection.isWhareHouse()){
+                int x = (int) (intersection.getX());
+                int y = (int) (intersection.getY());
+                g2d.fillOval(x, y, 5, 5);
+                centerX += intersection.getX();
+                centerY += intersection.getY();
+            }
+
         }
 
     }
