@@ -13,6 +13,7 @@ import java.io.File;
 
 import Models.Intersection;
 import Models.Segment;
+import Models.Warehouse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -27,6 +28,7 @@ import org.locationtech.proj4j.ProjCoordinate;
 public class MapView extends JPanel {
     private ArrayList<Intersection> intersections = new ArrayList<Intersection>();
     private ArrayList<Segment> segments = new ArrayList<Segment>();
+    private Warehouse warehouse;
     private static final String WGS84 = "EPSG:4326"; // système de coordonnées géographiques WGS84
     private static final String UTM30N = "EPSG:32630"; // système de coordonnées UTM 30N
 
@@ -48,8 +50,8 @@ public class MapView extends JPanel {
 
             // Extract wareHouse
             NodeList wareHouseList = doc.getElementsByTagName("warehouse");
-            Element wareHouse = (Element) wareHouseList.item(0);
-            long wareHouseAddress = Long.parseLong(wareHouse.getAttribute("address"));
+            Element wareHouseElement = (Element) wareHouseList.item(0);
+            long wareHouseAddress = Long.parseLong(wareHouseElement.getAttribute("address"));
 
 
             // Extract the intersection data
@@ -83,6 +85,7 @@ public class MapView extends JPanel {
                 if(id == wareHouseAddress){
                     Intersection wareHousePoint = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y, true);
                     intersections.add(wareHousePoint);
+                    warehouse = new Warehouse(wareHousePoint);
                 }else{
                     Intersection point = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y, false);
                     intersections.add(point);

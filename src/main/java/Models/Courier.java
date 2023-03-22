@@ -18,4 +18,16 @@ public class Courier {
             nextId = courierId + 1;
         }
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public ArrayList<Delivery> getDeliveries() {
+        return deliveries;
+    }
+
+    public void setDeliveries(ArrayList<Delivery> deliveries) {
+        this.deliveries = deliveries;
+    }
 }
