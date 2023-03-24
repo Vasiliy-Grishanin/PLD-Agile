@@ -62,6 +62,18 @@ public class HomeView extends JFrame {
                     drawMap(selectedFile);
                     String absolutePath = selectedFile.getAbsolutePath();
                     System.out.println("Chemin absolu : " + absolutePath);
+                    System.out.println("Chemin absolu : " + absolutePath);*/
+                    controller.setMapPath(selectedFile.getAbsolutePath());
+
+                    // créer une instance de Map
+                    ArrayList<Intersection> intersections = new ArrayList<>();
+                    ArrayList<Segment> segments = new ArrayList<>();
+                    MapView mapView = null;
+                    MapController mapController = new MapController(intersections, segments, controller, mapView);
+                    mapView = mapController.getView();
+                    contentPane.add(mapView);
+                    contentPane.revalidate();
+
                 }
             }
         });
@@ -86,8 +98,7 @@ public class HomeView extends JFrame {
         buttonPanel.add(btnLoadRequests);
 
         contentPane.add(buttonPanel, BorderLayout.NORTH);
-        repaint();
-
+        //repaint();
     }
     public void drawMap(File selectedFile){
         //JPanel mapPanel = new JPanel(new GridLayout(40, 1));

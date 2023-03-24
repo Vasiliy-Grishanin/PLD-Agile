@@ -6,6 +6,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -13,6 +15,7 @@ import java.io.File;
 
 import Models.Intersection;
 import Models.Segment;
+import org.w3c.dom.Element;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -162,7 +165,7 @@ public class MapView extends JPanel {
             if(intersection.isWhareHouse()){
                 int x = (int) (intersection.getX());
                 int y = (int) (intersection.getY());
-                g2d.fillOval(x, y, 5, 5);
+                g2d.fillOval(x, y, 10, 10);
                 centerX += intersection.getX();
                 centerY += intersection.getY();
             }
