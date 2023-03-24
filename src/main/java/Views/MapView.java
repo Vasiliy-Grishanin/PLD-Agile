@@ -1,11 +1,6 @@
 package Views;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -16,11 +11,6 @@ import java.io.File;
 import Models.Intersection;
 import Models.Segment;
 import org.w3c.dom.Element;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.CoordinateTransform;
@@ -40,97 +30,8 @@ public class MapView extends JPanel {
     private static int heightView = 700;
     private static int widthView = 700;
 
-    public MapView(File selectedFile) {
-        // Parse the XML file and extract the intersection and segment data
-        try {
-            InputStream inputStream = new FileInputStream(selectedFile);
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(inputStream);
-            doc.getDocumentElement().normalize();
-
-            // Extract wareHouse
-            NodeList wareHouseList = doc.getElementsByTagName("warehouse");
-            Element wareHouse = (Element) wareHouseList.item(0);
-            long wareHouseAddress = Long.parseLong(wareHouse.getAttribute("address"));
-
-
-            // Extract the intersection data
-            NodeList intersectionList = doc.getElementsByTagName("intersection");
-
-            minLatitude = Double.MAX_VALUE;
-            minLongitude = Double.MAX_VALUE;
-            maxLatitude = Double.MIN_VALUE;
-            maxLongitude = Double.MIN_VALUE;
-
-            for (int i = 0; i < intersectionList.getLength(); i++) {
-                Element intersection = (Element) intersectionList.item(i);
-                double latitude = Double.parseDouble(intersection.getAttribute("latitude"));
-                double longitude = Double.parseDouble(intersection.getAttribute("longitude"));
-                if(latitude > maxLatitude){
-                    maxLatitude = latitude;
-                }
-                if(latitude < minLatitude){
-                    minLatitude = latitude;
-                }
-                if(longitude > maxLongitude){
-                    maxLongitude = longitude;
-                }
-                if(longitude < minLongitude){
-                    minLongitude = longitude;
-                }
-
-
-                long id = Long.parseLong(intersection.getAttribute("id"));
-                ProjCoordinate sourceCoord = new ProjCoordinate(longitude, latitude);
-                if(id == wareHouseAddress){
-                    Intersection wareHousePoint = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y, true);
-                    intersections.add(wareHousePoint);
-                }else{
-                    Intersection point = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y, false);
-                    intersections.add(point);
-                }
-            }
-
-            double ecartLat = maxLatitude - minLatitude;
-            double ecartLong = maxLongitude - minLongitude;
-            for(Intersection intersection : intersections){
-                intersection.setX((intersection.getLongitude() - minLongitude) * widthView / ecartLong);
-                intersection.setY((intersection.getLatitude() - minLatitude) * heightView / ecartLat);
-            }
-            // Extract the segment data
-            NodeList segmentList = doc.getElementsByTagName("segment");
-            for (int i = 0; i < segmentList.getLength(); i++) {
-                Element segment = (Element) segmentList.item(i);
-                long startId =  Long.parseLong(segment.getAttribute("origin"));
-                long endId = Long.parseLong(segment.getAttribute("destination"));
-                double length = Double.parseDouble(segment.getAttribute("length"));
-                String name = segment.getAttribute("length");
-
-                // Find the starting and ending points of the segment based on their IDs
-                Intersection startPoint = null;
-                Intersection endPoint = null;
-                for (Intersection intersection : intersections) {
-                    if (intersection.getId() == startId) {
-                        startPoint = intersection;
-                    }
-                    if (intersection.getId() == endId) {
-                        endPoint = intersection;
-                    }
-                }
-                Point2D.Double x = new Point2D.Double(startPoint.getX(), startPoint.getY());
-                Point2D.Double y = new Point2D.Double(endPoint.getX(), endPoint.getY());
-                // Add the segment to the list of segments
-                Line2D.Double line2D = new Line2D.Double(x ,y);
-                Segment line = new Segment(endId, startId, length, name, line2D);
-
-                segments.add(line);
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public MapView(MapController controller) {
+        this.controller = controller;
     }
 
     public void paintComponent(Graphics g) {
@@ -165,6 +66,7 @@ public class MapView extends JPanel {
                 g2d.fillOval(x, y, 10, 10);
                 centerX += intersection.getX();
                 centerY += intersection.getY();
+                break;
             }
         }
     }

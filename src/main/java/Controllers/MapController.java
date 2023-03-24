@@ -48,6 +48,7 @@ public class MapController {
         extractSegments();
         extractWareHouse();
         updateView();
+
     }
 
     public MapView getView() { return this.view; }

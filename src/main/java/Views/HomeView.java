@@ -59,10 +59,6 @@ public class HomeView extends JFrame {
                 int result = fileChooser.showOpenDialog(contentPane);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    drawMap(selectedFile);
-                    String absolutePath = selectedFile.getAbsolutePath();
-                    System.out.println("Chemin absolu : " + absolutePath);
-                    System.out.println("Chemin absolu : " + absolutePath);*/
                     controller.setMapPath(selectedFile.getAbsolutePath());
 
                     // créer une instance de Map
@@ -73,7 +69,6 @@ public class HomeView extends JFrame {
                     mapView = mapController.getView();
                     contentPane.add(mapView);
                     contentPane.revalidate();
-
                 }
             }
         });
@@ -103,19 +98,6 @@ public class HomeView extends JFrame {
     public void drawMap(File selectedFile){
         //JPanel mapPanel = new JPanel(new GridLayout(40, 1));
 
-        //MapView map = new MapView(selectedFile);
-        //map.setVisible(true);
-        //mapPanel.add(map);
-        //mapPanel.add(map);
-        //map.setPreferredSize(new Dimension(500, 500));
-        ///this.pack();
-        //contentPane.add(map);
-
-        MapView map = new MapView(selectedFile);
-        map.setVisible(true);
-        contentPane.add(map);
-        contentPane.revalidate();
-    }
     public void addLoadMapListener(ActionListener listener){
         btnLoadMap.addActionListener(listener);
     }
