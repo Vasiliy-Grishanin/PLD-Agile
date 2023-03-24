@@ -154,7 +154,7 @@ public class MapController {
     }
 
     public void updateView(){
-        view = new MapView(this);
+        view = new MapView();
         view.setVisible(true);
     }
     public ArrayList<Segment> getSegments() { return segments; }

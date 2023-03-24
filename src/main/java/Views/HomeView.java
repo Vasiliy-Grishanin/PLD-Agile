@@ -1,10 +1,15 @@
 package Views;
 
+import Controllers.MapController;
+import Models.Intersection;
+import Models.Segment;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -59,16 +64,9 @@ public class HomeView extends JFrame {
                 int result = fileChooser.showOpenDialog(contentPane);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    controller.setMapPath(selectedFile.getAbsolutePath());
-
-                    // créer une instance de Map
-                    ArrayList<Intersection> intersections = new ArrayList<>();
-                    ArrayList<Segment> segments = new ArrayList<>();
-                    MapView mapView = null;
-                    MapController mapController = new MapController(intersections, segments, controller, mapView);
-                    mapView = mapController.getView();
-                    contentPane.add(mapView);
-                    contentPane.revalidate();
+                    drawMap(selectedFile);
+                    String absolutePath = selectedFile.getAbsolutePath();
+                    System.out.println("Chemin absolu : " + absolutePath);
                 }
             }
         });
