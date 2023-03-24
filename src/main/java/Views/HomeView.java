@@ -1,10 +1,16 @@
 package Views;
 
+import Controllers.HomeController;
+import Controllers.MapController;
+import Models.Intersection;
+import Models.Segment;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -18,14 +24,14 @@ public class HomeView extends JFrame {
     private JPanel contentPane;
     private JButton btnLoadMap;
     private JButton btnLoadRequests;
+    private HomeController controller;
 
     /**
      * Create the frame.
      */
-    public HomeView() {
+    public HomeView(HomeController controller) {
+        this.controller = controller;
         createWindow("MealRun");
-
-        //this.pack();
     }
 
     public void createWindow(String nameApp){
@@ -59,9 +65,18 @@ public class HomeView extends JFrame {
                 int result = fileChooser.showOpenDialog(contentPane);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    drawMap(selectedFile);
+                    /*drawMap(selectedFile);
                     String absolutePath = selectedFile.getAbsolutePath();
-                    System.out.println("Chemin absolu : " + absolutePath);
+                    System.out.println("Chemin absolu : " + absolutePath);*/
+                    controller.setMapPath(selectedFile.getAbsolutePath());
+
+                    // créer une instance de Map
+                    ArrayList<Intersection> intersections = new ArrayList<>();
+                    ArrayList<Segment> segments = new ArrayList<>();
+                    MapView mapView = null;
+                    MapController mapController = new MapController(intersections, segments, controller, mapView);
+
+
                 }
             }
         });
@@ -87,35 +102,19 @@ public class HomeView extends JFrame {
 
         contentPane.add(buttonPanel, BorderLayout.NORTH);
         repaint();
-
     }
+
     public void drawMap(File selectedFile){
-        //JPanel mapPanel = new JPanel(new GridLayout(40, 1));
-
-        //MapView map = new MapView(selectedFile);
-        //map.setVisible(true);
-        //mapPanel.add(map);
-        //mapPanel.add(map);
-        //map.setPreferredSize(new Dimension(500, 500));
-        ///this.pack();
-        //contentPane.add(map);
-
-        MapView map = new MapView(selectedFile);
+        /*MapView map = new MapView();
         map.setVisible(true);
         contentPane.add(map);
-        contentPane.revalidate();
+        contentPane.revalidate();*/
+    }
+    public void addLoadMapListener(ActionListener listener){
+        btnLoadMap.addActionListener(listener);
     }
 
-    /*public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    HomeView frame = new HomeView();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }*/
+    public void addLoadRequestsListener(ActionListener listener){
+        btnLoadRequests.addActionListener(listener);
+    }
 }
