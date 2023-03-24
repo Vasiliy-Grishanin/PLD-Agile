@@ -28,7 +28,7 @@ public class HomeView extends JFrame {
         //this.pack();
     }
 
-    public void createWindow(String nameApp){
+    private void createWindow(String nameApp){
         setTitle(nameApp);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -115,6 +115,9 @@ public class HomeView extends JFrame {
         map.setVisible(true);
         contentPane.add(map);
         contentPane.revalidate();
+    }
+    public void addLoadMapListener(ActionListener listener){
+        btnLoadMap.addActionListener(listener);
     }
 
     /*public static void main(String[] args) {

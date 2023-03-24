@@ -136,10 +136,9 @@ public class MapView extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
+
         // Set the background color of the panel
         setBackground(Color.LIGHT_GRAY);
-        //AffineTransform oldTransform = g2d.getTransform();
-
 
         // Set the drawing color and thickness for the segments
         g2d.setColor(Color.BLACK);
@@ -158,8 +157,6 @@ public class MapView extends JPanel {
         double centerX = 0.0;
         double centerY = 0.0;
 
-
-
         // Draw each intersection as a filled circle centered at its location
         for (Intersection intersection : intersections) {
             if(intersection.isWhareHouse()){
@@ -169,10 +166,6 @@ public class MapView extends JPanel {
                 centerX += intersection.getX();
                 centerY += intersection.getY();
             }
-
         }
-
     }
-
-
 }

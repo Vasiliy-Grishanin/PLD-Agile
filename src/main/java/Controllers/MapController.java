@@ -27,7 +27,6 @@ public class MapController {
     private ArrayList<Segment> segments;
     //View
     private MapView view;
-
     private String uri;
     private Document doc;
     private static double minLatitude = 0d;
@@ -49,7 +48,6 @@ public class MapController {
         extractSegments();
         extractWareHouse();
         updateView();
-
     }
 
     public MapView getView() { return this.view; }
@@ -156,10 +154,7 @@ public class MapController {
 
     public void updateView(){
         view = new MapView(this);
-        /*view.revalidate();*/
         view.setVisible(true);
-        /*view.revalidate();*/
-
     }
     public ArrayList<Segment> getSegments() { return segments; }
     public ArrayList<Intersection> getIntersections() { return intersections; }
