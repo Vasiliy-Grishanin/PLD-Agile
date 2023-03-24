@@ -1,4 +1,5 @@
 package App;
+import Controllers.HomeController;
 import Views.HomeView;
 
 /**
@@ -9,8 +10,9 @@ public class App
 {
     public static void main( String[] args )
     {
-        // créer une instance de HomeView
-        HomeView homeView = new HomeView();
+        // créer une instance de Home
+        HomeController homeController = new HomeController();
+        HomeView homeView = new HomeView(homeController);
         homeView.setVisible(true);
     }
 }
