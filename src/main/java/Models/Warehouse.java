@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Warehouse {
     private final Intersection address;
-    private ArrayList<Courier> couriers = new ArrayList<Courier>();
+    private ArrayList<Courier> couriers = new ArrayList<>();
 
     public Warehouse (Intersection address) {
         this.address = address;

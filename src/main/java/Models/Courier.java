@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Courier {
     private static int nextId = 1;
     private final int id;
-    private ArrayList<Delivery> deliveries = new ArrayList<Delivery>();
+    private ArrayList<Delivery> deliveries = new ArrayList<>();
 
     public Courier () {
         id = nextId;
