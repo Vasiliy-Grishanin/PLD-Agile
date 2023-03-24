@@ -57,6 +57,7 @@ public class MapView extends JPanel {
                 g2d.fillOval(x, y, 10, 10);
                 centerX += intersection.getX();
                 centerY += intersection.getY();
+                continue;
             }
         }
     }

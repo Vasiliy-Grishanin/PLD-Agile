@@ -45,11 +45,10 @@ public class MapController {
         this.uri = homeController.getMapPath();
 
         uploadFileXML(homeController.getMapPath());
+        extractWareHouse();
         extractIntersections();
         extractSegments();
-        extractWareHouse();
         updateView();
-
     }
 
     public MapView getView() { return this.view; }
@@ -156,10 +155,7 @@ public class MapController {
 
     public void updateView(){
         view = new MapView(this);
-        /*view.revalidate();*/
         view.setVisible(true);
-        /*view.revalidate();*/
-
     }
     public ArrayList<Segment> getSegments() { return segments; }
     public ArrayList<Intersection> getIntersections() { return intersections; }
