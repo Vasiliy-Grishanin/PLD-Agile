@@ -95,8 +95,6 @@ public class HomeView extends JFrame {
         contentPane.add(buttonPanel, BorderLayout.NORTH);
         //repaint();
     }
-    public void drawMap(File selectedFile){
-        //JPanel mapPanel = new JPanel(new GridLayout(40, 1));
 
     public void addLoadMapListener(ActionListener listener){
         btnLoadMap.addActionListener(listener);
