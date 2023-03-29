@@ -23,6 +23,7 @@ public class HomeView extends JFrame {
     private JPanel contentPane;
     private JButton btnLoadMap;
     private JButton btnLoadRequests;
+    private JButton btnCalculateDelivery;
     private HomeController homeController;
     private MapController mapController;
     public static DeliveryView deliveryView;
@@ -53,7 +54,7 @@ public class HomeView extends JFrame {
         setContentPane(contentPane);
 
         // Créer un JPanel pour contenir les boutons
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
 
         //BTN MAP
         btnLoadMap = new JButton("Charger la carte");
@@ -98,6 +99,15 @@ public class HomeView extends JFrame {
             }
         });
         buttonPanel.add(btnLoadRequests);
+
+        //BTN CALCULATE DELIVERY
+        btnCalculateDelivery = new JButton("Calculer les itinéraires");
+        btnCalculateDelivery.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        buttonPanel.add(btnCalculateDelivery);
 
         contentPane.add(buttonPanel, BorderLayout.NORTH);
     }

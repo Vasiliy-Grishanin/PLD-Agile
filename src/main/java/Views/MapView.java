@@ -1,13 +1,11 @@
 package Views;
 
 import java.awt.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
-import java.io.File;
+import javax.swing.JOptionPane;
 
-import Controllers.HomeController;
 import Controllers.MapController;
 import Models.Delivery;
 import Models.Intersection;
@@ -19,6 +17,32 @@ public class MapView extends JPanel {
 
     public MapView(MapController controller) {
         this.controller = controller;
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int x = e.getX(); // Récupère la coordonnée X du clic
+                int y = e.getY(); // Récupère la coordonnée Y du clic
+
+                // Utiliser les coordonnées x et y pour afficher votre info bulle
+                // ...
+                for (Intersection intersection : controller.getIntersections()) {
+                    if(x < (int) (intersection.getX())+2 && x > (int) (intersection.getX())-2 && y < (int) (intersection.getY())+2 && y > (int) (intersection.getY())-2){
+                        setToolTipText("X : "+ intersection.getX() + "</br>" +
+                                       "Y : "+ intersection.getY());
+                        String s = JOptionPane.showInputDialog(null, (
+                                "ID : "+ intersection.getId() + "\r\n" +
+                                "X : "+ intersection.getX() + "\r\n" +
+                                "Y : "+ intersection.getY()) + "\r\n" +
+                                "Latitude : " + intersection.getLatitude() + "\r\n" +
+                                "Longitude : " + intersection.getLongitude() + "\r\n" +
+                                "Entrepot ? : " + intersection.isWareHouse());
+                        String[] t = s.split(" ");
+                        Delivery deliveryOnPoint = new Delivery(intersection, Integer.parseInt(t[1]), Long.parseLong(t[0]));
+                        HomeView.deliveryView.getDeliveryController().getDeliveries().add(deliveryOnPoint);
+                    }
+                }
+            }
+        });
     }
 
     public void paintComponent(Graphics g) {
@@ -51,11 +75,13 @@ public class MapView extends JPanel {
                 if (delivery.getIntersectionId() == intersection.getId()) {
                     g2d.setColor(Color.ORANGE);
                     g2d.fillOval(x, y, 5, 5);
-
                     g2d.setColor(Color.BLACK);
                 }
             }
-
         }
+
+
     }
+
+
 }

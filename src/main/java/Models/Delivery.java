@@ -12,6 +12,12 @@ public class Delivery {
         this.startTime = startTime;
     }
 
+    public Delivery(Intersection address, int startTime, long courierId) {
+        this.address = address;
+        this.startTime = startTime;
+        this.courierId = courierId;
+    }
+
     public Delivery(Intersection address, Courier courier, int startTime) {
         this.address = address;
         this.courier = courier;
