@@ -26,14 +26,10 @@ public class HomeView extends JFrame {
     private JButton btnLoadRequests;
     private HomeController controller;
 
-    /**
-     * Create the frame.
-     */
+
     public HomeView(HomeController controller) {
         this.controller = controller;
         createWindow("MealRun");
-
-        //this.pack();
     }
 
     private void createWindow(String nameApp){
@@ -101,7 +97,6 @@ public class HomeView extends JFrame {
         buttonPanel.add(btnLoadRequests);
 
         contentPane.add(buttonPanel, BorderLayout.NORTH);
-        //repaint();
     }
 
     public void addLoadMapListener(ActionListener listener){

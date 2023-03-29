@@ -11,16 +11,13 @@ import Controllers.HomeController;
 import Controllers.MapController;
 import Models.Intersection;
 import Models.Segment;
-import org.w3c.dom.Element;
 
 
 public class MapView extends JPanel {
     private MapController controller;
 
-
     public MapView(MapController controller) {
         this.controller = controller;
-        //this.repaint();
     }
 
     public void paintComponent(Graphics g) {
@@ -28,7 +25,6 @@ public class MapView extends JPanel {
         Graphics2D g2d = (Graphics2D) g.create();
         // Set the background color of the panel
         setBackground(Color.LIGHT_GRAY);
-
 
         // Set the drawing color and thickness for the segments
         g2d.setColor(Color.BLACK);
@@ -43,21 +39,12 @@ public class MapView extends JPanel {
         g2d.setColor(Color.MAGENTA);
         int size = 10;
 
-        // Déplace et agrandit l'origine pour le centre des points
-        double centerX = 0.0;
-        double centerY = 0.0;
-
-
-
         // Draw each intersection as a filled circle centered at its location
         for (Intersection intersection : controller.getIntersections()) {
             if(intersection.isWareHouse()){
                 int x = (int) (intersection.getX());
                 int y = (int) (intersection.getY());
-                g2d.fillOval(x, y, 10, 10);
-                centerX += intersection.getX();
-                centerY += intersection.getY();
-                continue;
+                g2d.fillOval(x, y, size, size);
             }
         }
     }
