@@ -1,8 +1,11 @@
 package Views;
 
+import Controllers.GraphController;
 import Controllers.HomeController;
 import Controllers.MapController;
+import Models.Delivery;
 import Models.Intersection;
+import Models.Path;
 import Models.Segment;
 
 import java.awt.*;
@@ -10,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -104,7 +108,14 @@ public class HomeView extends JFrame {
         btnCalculateDelivery = new JButton("Calculer les itinéraires");
         btnCalculateDelivery.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                List<Delivery> deliveries = deliveryView.getDeliveryController().getDeliveries();
+                GraphController graphController = MapController.graphController;
 
+                for (Delivery delivery : deliveries) {
+                    if (delivery.getAddress() != null)
+                        graphController.AStar(MapController.warehouse.getAddress(), delivery.getAddress());
+
+                }
             }
         });
         buttonPanel.add(btnCalculateDelivery);

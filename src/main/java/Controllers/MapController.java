@@ -2,6 +2,7 @@ package Controllers;
 
 import Models.Intersection;
 import Models.Segment;
+import Models.Warehouse;
 import Views.MapView;
 
 import org.locationtech.proj4j.ProjCoordinate;
@@ -38,12 +39,15 @@ public class MapController {
     private static long wareHouseAddress;
     private static int heightView = 700;
     private static int widthView = 700;
+    public static GraphController graphController;
+    public static Warehouse warehouse;
 
     public MapController(ArrayList<Intersection> intersections, ArrayList<Segment> segments, HomeController homeController, MapView view){
         this.intersections = intersections;
         this.segments = segments;
         this.view = view;
         this.uri = homeController.getMapPath();
+        graphController = new GraphController();
 
         uploadFileXML(homeController.getMapPath());
         extractWareHouse();
@@ -103,6 +107,7 @@ public class MapController {
             if(id == wareHouseAddress){
                 Intersection wareHousePoint = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y, true);
                 intersections.add(wareHousePoint);
+                warehouse = new Warehouse(wareHousePoint);
             }else{
                 Intersection point = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y, false);
                 intersections.add(point);
@@ -144,6 +149,7 @@ public class MapController {
                     endPoint = intersection;
                 }
             }
+            graphController.addEdge(startPoint, endPoint, length);
             Point2D.Double x = new Point2D.Double(startPoint.getX(), startPoint.getY());
             Point2D.Double y = new Point2D.Double(endPoint.getX(), endPoint.getY());
             // Add the segment to the list of segments

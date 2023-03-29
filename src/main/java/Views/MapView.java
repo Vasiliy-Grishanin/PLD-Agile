@@ -26,13 +26,13 @@ public class MapView extends JPanel {
                 // Utiliser les coordonnées x et y pour afficher votre info bulle
                 // ...
                 for (Intersection intersection : controller.getIntersections()) {
-                    if(x < (int) (intersection.getX())+2 && x > (int) (intersection.getX())-2 && y < (int) (intersection.getY())+2 && y > (int) (intersection.getY())-2){
-                        setToolTipText("X : "+ intersection.getX() + "</br>" +
-                                       "Y : "+ intersection.getY());
+                    if (x < (int) (intersection.getX()) + 2 && x > (int) (intersection.getX()) - 2 && y < (int) (intersection.getY()) + 2 && y > (int) (intersection.getY()) - 2) {
+                        setToolTipText("X : " + intersection.getX() + "</br>" +
+                                "Y : " + intersection.getY());
                         String s = JOptionPane.showInputDialog(null, (
-                                "ID : "+ intersection.getId() + "\r\n" +
-                                "X : "+ intersection.getX() + "\r\n" +
-                                "Y : "+ intersection.getY()) + "\r\n" +
+                                "ID : " + intersection.getId() + "\r\n" +
+                                        "X : " + intersection.getX() + "\r\n" +
+                                        "Y : " + intersection.getY()) + "\r\n" +
                                 "Latitude : " + intersection.getLatitude() + "\r\n" +
                                 "Longitude : " + intersection.getLongitude() + "\r\n" +
                                 "Entrepot ? : " + intersection.isWareHouse());
@@ -65,17 +65,19 @@ public class MapView extends JPanel {
         for (Intersection intersection : controller.getIntersections()) {
             int x = (int) (intersection.getX());
             int y = (int) (intersection.getY());
-            if(intersection.isWareHouse()){
+            if (intersection.isWareHouse()) {
                 g2d.setColor(Color.MAGENTA);
                 g2d.fillOval(x, y, size, size);
                 g2d.setColor(Color.BLACK);
             }
 
-            for (Delivery delivery: HomeView.deliveryView.getDeliveryController().getDeliveries()) {
-                if (delivery.getIntersectionId() == intersection.getId()) {
-                    g2d.setColor(Color.ORANGE);
-                    g2d.fillOval(x, y, 5, 5);
-                    g2d.setColor(Color.BLACK);
+            if (HomeView.deliveryView != null) { // s'il y a des deliveries
+                for (Delivery delivery : HomeView.deliveryView.getDeliveryController().getDeliveries()) {
+                    if (delivery.getIntersectionId() == intersection.getId()) {
+                        g2d.setColor(Color.ORANGE);
+                        g2d.fillOval(x, y, 5, 5);
+                        g2d.setColor(Color.BLACK);
+                    }
                 }
             }
         }
