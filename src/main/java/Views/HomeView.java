@@ -9,7 +9,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -24,11 +23,15 @@ public class HomeView extends JFrame {
     private JPanel contentPane;
     private JButton btnLoadMap;
     private JButton btnLoadRequests;
-    private HomeController controller;
+    private HomeController homeController;
+    private MapController mapController;
+    public static DeliveryView deliveryView;
 
-
-    public HomeView(HomeController controller) {
-        this.controller = controller;
+    /**
+     * Create the frame.
+     */
+    public HomeView(HomeController homeController) {
+        this.homeController = homeController;
         createWindow("MealRun");
     }
 
@@ -63,13 +66,13 @@ public class HomeView extends JFrame {
                 int result = fileChooser.showOpenDialog(contentPane);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    controller.setMapPath(selectedFile.getAbsolutePath());
+                    homeController.setMapPath(selectedFile.getAbsolutePath());
 
                     // créer une instance de Map
                     ArrayList<Intersection> intersections = new ArrayList<>();
                     ArrayList<Segment> segments = new ArrayList<>();
                     MapView mapView = null;
-                    MapController mapController = new MapController(intersections, segments, controller, mapView);
+                    mapController = new MapController(intersections, segments, homeController, mapView);
                     mapView = mapController.getView();
                     contentPane.add(mapView);
                     contentPane.revalidate();
@@ -90,7 +93,7 @@ public class HomeView extends JFrame {
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     // Traite le fichier sélectionné
-                    System.out.println("Demandes chargées : " + selectedFile.getAbsolutePath());
+                    deliveryView = new DeliveryView(selectedFile);
                 }
             }
         });
