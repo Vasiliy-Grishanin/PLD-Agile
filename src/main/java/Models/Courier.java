@@ -6,6 +6,7 @@ public class Courier {
     private static int nextId = 1;
     private final int id;
     private ArrayList<Delivery> deliveries = new ArrayList<>();
+    private ArrayList<Path> paths = new ArrayList<>();
 
     public Courier () {
         id = nextId;
@@ -29,5 +30,13 @@ public class Courier {
 
     public void setDeliveries(ArrayList<Delivery> deliveries) {
         this.deliveries = deliveries;
+    }
+
+    public ArrayList<Path> getPaths() {
+        return paths;
+    }
+
+    public void setPaths(ArrayList<Path> paths) {
+        this.paths = paths;
     }
 }

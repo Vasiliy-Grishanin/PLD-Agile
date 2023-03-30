@@ -9,6 +9,9 @@ public class Warehouse {
 
     public Warehouse(Intersection address) {
         this.address = address;
+        couriers.add(new Courier());
+        couriers.add(new Courier());
+        couriers.add(new Courier());
     }
 
     public Intersection getAddress() {

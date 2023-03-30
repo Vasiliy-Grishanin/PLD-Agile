@@ -36,9 +36,13 @@ public class MapView extends JPanel {
                                 "Entrepot ? : " + intersection.isWareHouse());
                         if(s != null){
                             String[] t = s.split(" ");
-                            Delivery deliveryOnPoint = new Delivery(intersection, Integer.parseInt(t[1]), Long.parseLong(t[0]));
-                            HomeView.deliveryView.getDeliveryController().getDeliveries().add(deliveryOnPoint);
-                            revalidate();
+                            int startTime = Integer.parseInt(t[1]);
+                            if (startTime >= 8 && startTime <= 11) {
+                                int courierId = Integer.parseInt(t[0]);
+                                Delivery deliveryOnPoint = new Delivery(intersection, startTime, courierId);
+                                HomeView.deliveryView.getDeliveryController().getDeliveries().add(deliveryOnPoint);
+                                revalidate();
+                            }
                         }
 
                     }

@@ -30,7 +30,6 @@ public class DeliveryController {
     private void loadXmlFile () {
         //if (currentXmlFile == null || !currentXmlFile.exists())
         //    return;
-        System.out.println("Loading deliveries XML...");
 
         try {
             InputStream inputStream = new FileInputStream(currentXmlFile);
@@ -51,7 +50,7 @@ public class DeliveryController {
 
                 try {
                     // le coursier est renseigné
-                    long courierId = Long.parseLong(delivery.getAttribute("courier-id"));
+                    int courierId = Integer.parseInt(delivery.getAttribute("courier-id"));
                     deliveries.add(new Delivery(intersectionId, courierId, startTime));
                 } catch (NumberFormatException e) {
                     // le coursier n'est pas renseigné

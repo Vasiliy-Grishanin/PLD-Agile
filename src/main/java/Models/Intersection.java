@@ -1,5 +1,7 @@
 package Models;
 
+import java.util.Objects;
+
 public class Intersection {
     private long id;
     private double latitude;
@@ -54,4 +56,16 @@ public class Intersection {
         Y = y;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Intersection that = (Intersection) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

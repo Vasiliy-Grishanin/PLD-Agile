@@ -3,7 +3,7 @@ package Models;
 public class Delivery {
     private long intersectionId;
     private Intersection address;
-    private long courierId;
+    private int courierId = 1;
     private Courier courier;
     private final int startTime;
 
@@ -12,7 +12,7 @@ public class Delivery {
         this.startTime = startTime;
     }
 
-    public Delivery(Intersection address, int startTime, long courierId) {
+    public Delivery(Intersection address, int startTime, int courierId) {
         this.address = address;
         this.startTime = startTime;
         this.courierId = courierId;
@@ -25,7 +25,7 @@ public class Delivery {
         this.startTime = startTime;
     }
 
-    public Delivery(long intersectionId, long courierId, int startTime) {
+    public Delivery(long intersectionId, int courierId, int startTime) {
         this.intersectionId = intersectionId;
         this.courierId = courierId;
         this.startTime = startTime;
@@ -56,11 +56,11 @@ public class Delivery {
         return intersectionId;
     }
 
-    public long getCourierId() {
+    public int getCourierId() {
         return courierId;
     }
 
-    public void setCourierId(long courierId) {
+    public void setCourierId(int courierId) {
         this.courierId = courierId;
     }
 
