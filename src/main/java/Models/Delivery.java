@@ -16,6 +16,7 @@ public class Delivery {
         this.address = address;
         this.startTime = startTime;
         this.courierId = courierId;
+        this.intersectionId = address.getId();
     }
 
     public Delivery(Intersection address, Courier courier, int startTime) {
