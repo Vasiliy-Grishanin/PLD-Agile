@@ -4,6 +4,7 @@ import Models.*;
 import Views.HomeView;
 import Views.MapView;
 import utils.DeliveryNode;
+import utils.DictionnaryPath;
 import utils.Edge;
 
 import java.awt.geom.Line2D;
@@ -23,6 +24,7 @@ public class GraphController {
     private HomeView homeView;
     Map<DeliveryNode, LocalTime> bestPath = new HashMap<>();
     LocalTime bestWarehouseArrival = LocalTime.of(23, 59, 59);
+    List<DictionnaryPath> dictionnaryPaths = new ArrayList<>();
 
     public GraphController(HomeView homeView) {
         intersectionsGraph = new HashMap<>();
@@ -70,6 +72,16 @@ public class GraphController {
         DeliveryNode.neighbors.add(node);
     }
 
+    private Path getPath (DeliveryNode startNode, DeliveryNode endNode) {
+        for (DictionnaryPath dictionnaryPath: dictionnaryPaths) {
+            Path path = dictionnaryPath.getPath(startNode, endNode);
+            if (path != null) {
+                return path;
+            }
+        }
+        return null;
+    }
+
     private void DFS(DeliveryNode node, List<DeliveryNode> visited, List<Map<DeliveryNode, LocalTime>> allPaths,
                      Map<DeliveryNode, LocalTime> currentPath, LocalTime time) {
         visited.add(node);
@@ -95,7 +107,11 @@ public class GraphController {
         } else {
             for (DeliveryNode neighbor : DeliveryNode.neighbors) {
                 if (!visited.contains(neighbor)) {
-                    Path aStarPath = AStar(node.getDelivery().getAddress(), neighbor.getDelivery().getAddress());
+                    Path aStarPath = getPath(node, neighbor);
+                    if (aStarPath == null) {
+                        aStarPath = AStar(node.getDelivery().getAddress(), neighbor.getDelivery().getAddress());
+                        dictionnaryPaths.add(new DictionnaryPath(node, neighbor, aStarPath));
+                    }
                     if (aStarPath == null) {
                         break;
                     }
