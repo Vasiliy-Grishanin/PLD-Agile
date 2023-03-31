@@ -1,47 +1,196 @@
 package Controllers;
 
+import Models.Delivery;
 import Models.Intersection;
 import Models.Path;
+import Models.Warehouse;
+import utils.DeliveryNode;
+import utils.Edge;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.*;
 
 public class GraphController {
-    private Map<Intersection, List<Edge>> adj; // Liste d'adjacence
+    private Map<Intersection, List<Edge>> intersectionsGraph; // Liste d'adjacence
+    public static Warehouse warehouse;
+    public static Delivery warehouseDelivery;
+    private static final double speedMS = 4.17;
+
+    Map<DeliveryNode, LocalTime> bestPath = new HashMap<>();
+    LocalTime bestWarehouseArrival = LocalTime.of(23, 59, 59);
 
     public GraphController() {
-        adj = new HashMap<>();
+        intersectionsGraph = new HashMap<>();
+    }
+
+    public static void setWarehouse(Warehouse warehouse) {
+        GraphController.warehouse = warehouse;
+        GraphController.warehouseDelivery = new Delivery(warehouse.getAddress(), 8);
     }
 
     // Fonction pour ajouter une arête entre deux intersections avec un poids
     public void addEdge(Intersection u, Intersection v, double weight) {
-        adj.putIfAbsent(u, new ArrayList<>());
-        adj.putIfAbsent(v, new ArrayList<>());
+        intersectionsGraph.putIfAbsent(u, new ArrayList<>());
+        intersectionsGraph.putIfAbsent(v, new ArrayList<>());
 
         // traitement de l'intersection U
         Edge edgeUV = new Edge(u, v, weight);
         boolean uNeedEdge = true;
-        for (Edge edge: adj.get(u)) {
+        for (Edge edge: intersectionsGraph.get(u)) {
             if (edge.getU() == v || edge.getV() == v) {
                 uNeedEdge = false;
                 break;
             }
         }
         if (uNeedEdge) {
-            adj.get(u).add(edgeUV);
+            intersectionsGraph.get(u).add(edgeUV);
         }
 
         // traitement de l'intersection V
         Edge edgeVU = new Edge(v, u, weight);
         boolean vNeedEdge = true;
-        for (Edge edge: adj.get(v)) {
+        for (Edge edge: intersectionsGraph.get(v)) {
             if (edge.getU() == u || edge.getV() == u) {
                 vNeedEdge = false;
                 break;
             }
         }
         if (vNeedEdge) {
-            adj.get(v).add(edgeVU);
+            intersectionsGraph.get(v).add(edgeVU);
         }
+    }
+
+    private void addNeighbour (DeliveryNode node) {
+        DeliveryNode.neighbors.add(node);
+    }
+
+    private void DFS(DeliveryNode node, List<DeliveryNode> visited, List<Map<DeliveryNode, LocalTime>> allPaths,
+                     Map<DeliveryNode, LocalTime> currentPath, LocalTime time) {
+        visited.add(node);
+        currentPath.put(node, time);
+
+        if (visited.size() == DeliveryNode.neighbors.size()) { // Tous les noeuds ont été visités
+            Path aStarPath = AStar(node.getDelivery().getAddress(), warehouse.getAddress());
+            if (aStarPath != null) {
+                // calcul le temps du retour à la warehouse
+                long timeSec = Math.round((aStarPath.getLength() / speedMS));
+
+                LocalTime arrivalTime = time.plusSeconds(timeSec);
+                LocalTime finalTime = arrivalTime.plus(Duration.between(time, arrivalTime));
+
+                // ajout de la dernière étape : la Warehouse
+                DeliveryNode warehouseNode = new DeliveryNode(warehouseDelivery, finalTime);
+                currentPath.put(warehouseNode, finalTime);
+                // le chemin est valable et terminé. On l'ajoute donc à la liste des chemins valables
+                allPaths.add(new HashMap<>(currentPath));
+                // on remet currentPath dans son état
+                currentPath.remove(warehouseNode);
+            }
+        } else {
+            for (DeliveryNode neighbor : DeliveryNode.neighbors) {
+                if (!visited.contains(neighbor)) {
+                    Path aStarPath = AStar(node.getDelivery().getAddress(), neighbor.getDelivery().getAddress());
+                    if (aStarPath == null) {
+                        break;
+                    }
+
+                    long timeSec = Math.round((aStarPath.getLength() / speedMS));
+
+                    LocalTime arrivalTime = time.plusSeconds(timeSec);
+                    if (arrivalTime.getHour() > neighbor.getDelivery().getStartTime() + 1) { // la livraison arrivera trop tard
+                        break;
+                    }
+
+                    // le chemin est pour l'instant correct, on propage donc le DFS
+                    DFS(neighbor, visited, allPaths, currentPath, arrivalTime);
+                }
+            }
+        }
+
+        visited.remove(node);
+        currentPath.remove(node);
+    }
+
+
+
+    public void calculateTour (List<Delivery> allDeliveries) {
+        // création du graphe complet des deliveries
+        HashMap<Integer, List<Delivery>> couriersDeliveries = new HashMap<>();
+        // assignation des deliveries aux coursiers
+        for (Delivery delivery: allDeliveries) {
+            couriersDeliveries.putIfAbsent(delivery.getCourierId(), new ArrayList<>());
+            couriersDeliveries.get(delivery.getCourierId()).add(delivery);
+        }
+
+
+
+        couriersDeliveries.forEach((courierId, deliveries) -> { // pour chaque coursier
+            // tri selon l'heure
+            deliveries.sort(Comparator.comparing(Delivery::getStartTime));
+
+            // création du graphe avec comme premier noeud, la warehouse
+            DeliveryNode deliveriesGraph = new DeliveryNode(warehouseDelivery);
+
+            // Réinitialisation du graphe
+            DeliveryNode.resetNeighbors();
+
+            // ajout des autres deliveries dans le graphe
+            for (Delivery delivery: deliveries) {
+                DeliveryNode deliveryNode = new DeliveryNode(delivery);
+                addNeighbour(deliveryNode);
+            }
+
+            List<DeliveryNode> visited = new ArrayList<>();
+            Map<DeliveryNode, LocalTime> currentPath = new HashMap<>();
+            List<Map<DeliveryNode, LocalTime>> allPaths = new ArrayList<>();
+            LocalTime startTime = LocalTime.of(8, 0, 0);
+            // Début du DFS
+            DFS(deliveriesGraph, visited, allPaths, currentPath, startTime);
+
+            if (allPaths.size() > 0) { // si des chemins valables ont été trouvés
+                bestPath = new HashMap<>();
+                bestWarehouseArrival = LocalTime.of(23, 59, 59);
+                for (Map<DeliveryNode, LocalTime> path: allPaths) {
+                    path.forEach((key, value) -> {
+                        if (key.getDelivery().getAddress() == warehouse.getAddress() && key.getArrivalTime() != null
+                        && key.getArrivalTime().isBefore(bestWarehouseArrival)) {
+                            // nous avons un chemin meilleur
+                            bestPath = path;
+                            bestWarehouseArrival = key.getArrivalTime();
+                        }
+                    });
+                }
+
+                // affichage du parcours optimal du coursier
+                System.out.println("___DFS + A*___");
+                System.out.println("Courier id: " + courierId);
+                System.out.println("---Paths---");
+                List<LocalTime> timeList = new ArrayList<>(bestPath.values());
+                timeList.sort(Comparator.naturalOrder());
+                for (LocalTime time : timeList) {
+                    for (Map.Entry<DeliveryNode, LocalTime> entry : bestPath.entrySet()) {
+                        if (entry.getValue().equals(time)) {
+                            DeliveryNode deliveryNode = entry.getKey();
+                            Delivery delivery = deliveryNode.getDelivery();
+                            if (delivery.getAddress() == warehouse.getAddress()) { // dépôt
+                                if (time.equals(LocalTime.of(8, 0, 0))) {
+                                    System.out.println("Depart depot a 8h00");
+                                } else {
+                                    System.out.println("Retour au depot a " + time.toString());
+                                }
+                            } else { // livraison intersection
+                                System.out.println("Livraison " + delivery.getAddress().getId() + " : Arrivee a " + time.toString()
+                                        + ", Depart a " + time.plusMinutes(5).toString());
+                            }
+
+                        }
+                    }
+                }
+            } else {
+                System.out.println("Le tour des livraisons n'est pas possible pour le coursier N." + courierId);
+            }
+        });
     }
 
     // Fonction pour effectuer la recherche A* sur le graphe
@@ -75,7 +224,7 @@ public class GraphController {
                 return new Path(path, totalWeight);
             }
             visited.add(current);
-            for (Edge e : adj.get(current)) {
+            for (Edge e : intersectionsGraph.get(current)) {
                 Intersection neighbor = e.getV();
                 double tentativeGScore = gScore.get(current) + e.getWeight();
 
@@ -96,7 +245,7 @@ public class GraphController {
             }
         }
 
-        List<Edge> a = adj.get(end);
+        List<Edge> a = intersectionsGraph.get(end);
 
         System.out.println("No path found from " + start.getId() + " to " + end.getId());
         return null;
@@ -110,15 +259,6 @@ public class GraphController {
         return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     }
 
-
-
-
-
-    // Fonction pour effectuer la recherche DFS sur le graphe
-    public void DFS(Intersection start, Intersection end) {
-        // A compléter selon l'algorithme DFS
-    }
-
     // Fonction auxiliaire pour imprimer le chemin entre deux intersections
     public void printPath(List<Intersection> path) {
         System.out.print("Path: ");
@@ -127,27 +267,37 @@ public class GraphController {
         System.out.println(path.get(path.size() - 1).getId());
     }
 
-    private static class Edge {
-        private final Intersection u;
-        private final Intersection v;
+    private static class DeliveryEdge {
+        private final Delivery u;
+        private final Delivery v;
         private final double weight;
+        private LocalTime arrivalTime;
+        private LocalTime departureTime;
 
-        public Edge(Intersection u, Intersection v, double weight) {
+        public DeliveryEdge(Delivery u, Delivery v, double weight) {
             this.u = u;
             this.v = v;
             this.weight = weight;
         }
 
-        public Intersection getU() {
+        public Delivery getU() {
             return u;
         }
 
-        public Intersection getV() {
+        public Delivery getV() {
             return v;
         }
 
         public double getWeight() {
             return weight;
+        }
+
+        public LocalTime getArrivalTime() {
+            return arrivalTime;
+        }
+
+        public LocalTime getDepartureTime() {
+            return departureTime;
         }
     }
 }

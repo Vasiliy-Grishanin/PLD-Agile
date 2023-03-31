@@ -169,6 +169,7 @@ public class HomeView extends JFrame {
                     }
 
                 }
+                System.out.println("___A* sans DFS___\n");
                 for (Courier courier: couriers) {
                     if (courier.getPaths().size() > 0) {
                         System.out.println("Courier id: " + courier.getId());
@@ -183,6 +184,8 @@ public class HomeView extends JFrame {
                         System.out.println("\n");
                     }
                 }
+
+                graphController.calculateTour(deliveries);
             }
         });
         buttonPanel.add(btnCalculateDelivery);

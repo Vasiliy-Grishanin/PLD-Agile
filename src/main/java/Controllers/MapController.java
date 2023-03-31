@@ -47,10 +47,12 @@ public class MapController {
         this.segments = segments;
         this.view = view;
         this.uri = homeController.getMapPath();
+
         graphController = new GraphController();
 
         uploadFileXML(homeController.getMapPath());
         extractWareHouse();
+
         extractIntersections();
         extractSegments();
         updateView();
@@ -108,6 +110,7 @@ public class MapController {
                 Intersection wareHousePoint = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y, true);
                 intersections.add(wareHousePoint);
                 warehouse = new Warehouse(wareHousePoint);
+                GraphController.setWarehouse(warehouse);
             }else{
                 Intersection point = new Intersection(id, latitude, longitude, sourceCoord.x, sourceCoord.y, false);
                 intersections.add(point);
