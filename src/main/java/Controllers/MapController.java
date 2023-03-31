@@ -3,6 +3,7 @@ package Controllers;
 import Models.Intersection;
 import Models.Segment;
 import Models.Warehouse;
+import Views.HomeView;
 import Views.MapView;
 
 import org.locationtech.proj4j.ProjCoordinate;
@@ -11,6 +12,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,21 +43,21 @@ public class MapController {
     private static int widthView = 700;
     public static GraphController graphController;
     public static Warehouse warehouse;
+    public HomeView homeView;
 
-    public MapController(ArrayList<Intersection> intersections, ArrayList<Segment> segments, HomeController homeController, MapView view){
+    public MapController(ArrayList<Intersection> intersections, ArrayList<Segment> segments, HomeController homeController, MapView view, HomeView homeView){
         this.intersections = intersections;
         this.segments = segments;
         this.view = view;
         this.uri = homeController.getMapPath();
+        this.homeView = homeView;
 
         graphController = new GraphController();
 
         uploadFileXML(homeController.getMapPath());
         extractWareHouse();
 
-        extractIntersections();
-        extractSegments();
-        updateView();
+
     }
 
     public MapView getView() { return this.view; }
@@ -127,8 +129,16 @@ public class MapController {
     public void extractWareHouse(){
         // Extract wareHouse
         NodeList wareHouseList = doc.getElementsByTagName("warehouse");
-        Element wareHouse = (Element) wareHouseList.item(0);
-        wareHouseAddress = Long.parseLong(wareHouse.getAttribute("address"));
+        if(wareHouseList.getLength() != 1 ){
+            JOptionPane.showConfirmDialog(null, ("Votre fichier est erroné il y'a soit aucun point d'entrepot soit plus qu'un !"));
+        }else{
+            Element wareHouse = (Element) wareHouseList.item(0);
+            wareHouseAddress = Long.parseLong(wareHouse.getAttribute("address"));
+            extractIntersections();
+            extractSegments();
+            updateView();
+        }
+
     }
 
     public void extractSegments(){
@@ -164,7 +174,7 @@ public class MapController {
     }
 
     public void updateView(){
-        view = new MapView(this);
+        view = new MapView(this, homeView);
         view.setVisible(true);
     }
 

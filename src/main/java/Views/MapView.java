@@ -15,7 +15,7 @@ import Models.Segment;
 public class MapView extends JPanel {
     private MapController controller;
 
-    public MapView(MapController controller) {
+    public MapView(MapController controller, HomeView homeView) {
         this.controller = controller;
         this.addMouseListener(new MouseAdapter() {
             @Override
@@ -41,16 +41,21 @@ public class MapView extends JPanel {
                                 int courierId = Integer.parseInt(t[0]);
                                 Delivery deliveryOnPoint = new Delivery(intersection, startTime, courierId);
                                 HomeView.deliveryView.getDeliveryController().getDeliveries().add(deliveryOnPoint);
-                                revalidate();
+                                repaint();
+                                homeView.repaint();
                             }
                         }
 
                     }
                 }
+
             }
         });
     }
 
+    public void problemWarehouseXML(){
+        JOptionPane.showInputDialog(null, ("Votre fichier est erroné il y'a soit aucun point d'entrepot soit plus qu'un !"));
+    }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
@@ -86,6 +91,7 @@ public class MapView extends JPanel {
 
                 }
             }
+
         }
 
 

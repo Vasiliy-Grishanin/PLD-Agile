@@ -82,9 +82,11 @@ public class HomeView extends JFrame {
                     ArrayList<Intersection> intersections = new ArrayList<>();
                     ArrayList<Segment> segments = new ArrayList<>();
                     MapView mapView = null;
-                    mapController = new MapController(intersections, segments, homeController, mapView);
+                    mapController = new MapController(intersections, segments, homeController, mapView, HomeView.this);
                     mapView = mapController.getView();
-                    contentPane.add(mapView);
+                    if(mapView != null){
+                        contentPane.add(mapView);
+                    }
                     contentPane.revalidate();
                 }
             }
@@ -191,6 +193,11 @@ public class HomeView extends JFrame {
         buttonPanel.add(btnCalculateDelivery);
 
         contentPane.add(buttonPanel, BorderLayout.NORTH);
+    }
+
+    @Override
+    public JPanel getContentPane() {
+        return contentPane;
     }
 
     public void addLoadMapListener(ActionListener listener){
