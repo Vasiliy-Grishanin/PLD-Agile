@@ -1,12 +1,13 @@
 package Controllers;
 
-import Models.Delivery;
-import Models.Intersection;
-import Models.Path;
-import Models.Warehouse;
+import Models.*;
+import Views.HomeView;
+import Views.MapView;
 import utils.DeliveryNode;
 import utils.Edge;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
@@ -16,12 +17,16 @@ public class GraphController {
     public static Warehouse warehouse;
     public static Delivery warehouseDelivery;
     private static final double speedMS = 4.17;
-
+    public static boolean flag = false;
+    public static ArrayList<Segment> road;
+    public ArrayList<Delivery> deliveriesXML = new ArrayList<Delivery>();
+    private HomeView homeView;
     Map<DeliveryNode, LocalTime> bestPath = new HashMap<>();
     LocalTime bestWarehouseArrival = LocalTime.of(23, 59, 59);
 
-    public GraphController() {
+    public GraphController(HomeView homeView) {
         intersectionsGraph = new HashMap<>();
+        this.homeView = homeView;
     }
 
     public static void setWarehouse(Warehouse warehouse) {
@@ -122,7 +127,7 @@ public class GraphController {
             couriersDeliveries.putIfAbsent(delivery.getCourierId(), new ArrayList<>());
             couriersDeliveries.get(delivery.getCourierId()).add(delivery);
         }
-
+        road = new ArrayList<Segment>();
 
 
         couriersDeliveries.forEach((courierId, deliveries) -> { // pour chaque coursier
@@ -168,11 +173,14 @@ public class GraphController {
                 System.out.println("---Paths---");
                 List<LocalTime> timeList = new ArrayList<>(bestPath.values());
                 timeList.sort(Comparator.naturalOrder());
+                Intersection previousIntersection = null;
                 for (LocalTime time : timeList) {
                     for (Map.Entry<DeliveryNode, LocalTime> entry : bestPath.entrySet()) {
                         if (entry.getValue().equals(time)) {
                             DeliveryNode deliveryNode = entry.getKey();
                             Delivery delivery = deliveryNode.getDelivery();
+                            //
+
                             if (delivery.getAddress() == warehouse.getAddress()) { // dépôt
                                 if (time.equals(LocalTime.of(8, 0, 0))) {
                                     System.out.println("Depart depot a 8h00");
@@ -182,11 +190,29 @@ public class GraphController {
                             } else { // livraison intersection
                                 System.out.println("Livraison " + delivery.getAddress().getId() + " : Arrivee a " + time.toString()
                                         + ", Depart a " + time.plusMinutes(5).toString());
+
                             }
+
+                            if (previousIntersection != null) {
+                                Path currentDeliveryPath = AStar(previousIntersection, delivery.getAddress());
+                                List<Intersection> deliveryIntersections = currentDeliveryPath.getPath();
+                                for (int i = 0; i < deliveryIntersections.size() - 1; ++i) {
+                                    Point2D.Double x = new Point2D.Double(deliveryIntersections.get(i).getX(), deliveryIntersections.get(i).getY());
+                                    Point2D.Double y = new Point2D.Double(deliveryIntersections.get(i+1).getX(), deliveryIntersections.get(i+1).getY());
+                                    Line2D.Double line2D = new Line2D.Double(x ,y);
+                                    road.add(new Segment(deliveryIntersections.get(i+1).getId(), deliveryIntersections.get(i).getId(), 0.0, "1", line2D));
+                                }
+                            }
+
+                            previousIntersection = delivery.getAddress();
 
                         }
                     }
                 }
+                flag = true;
+                homeView.revalidate();
+                homeView.repaint();
+
             } else {
                 System.out.println("Le tour des livraisons n'est pas possible pour le coursier N." + courierId);
             }

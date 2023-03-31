@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 
+import Controllers.GraphController;
 import Controllers.MapController;
 import Models.Delivery;
 import Models.Intersection;
@@ -88,10 +89,14 @@ public class MapView extends JPanel {
                         g2d.setColor(Color.RED);
                         g2d.fillOval(x, y, 7, 7);
                     }
-
                 }
             }
-
+        }
+        if (GraphController.flag){
+            g2d.setColor(Color.GREEN);
+            for (Segment segment : GraphController.road) {
+                g2d.draw(segment.getLine());
+            }
         }
 
 

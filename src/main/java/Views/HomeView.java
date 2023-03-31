@@ -26,9 +26,11 @@ public class HomeView extends JFrame {
     private JButton btnLoadMap;
     private JButton btnLoadRequests;
     private JButton btnCalculateDelivery;
+    private JButton btnSaveRequest;
     private HomeController homeController;
     private MapController mapController;
     public static DeliveryView deliveryView;
+
 
     /**
      * Create the frame.
@@ -191,6 +193,15 @@ public class HomeView extends JFrame {
             }
         });
         buttonPanel.add(btnCalculateDelivery);
+
+        // BTN DE SAVE
+        btnSaveRequest = new JButton("Enregistrer livraison");
+        btnSaveRequest.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        buttonPanel.add(btnSaveRequest);
 
         contentPane.add(buttonPanel, BorderLayout.NORTH);
     }
