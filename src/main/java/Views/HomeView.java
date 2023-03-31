@@ -13,11 +13,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 public class HomeView extends JFrame {
 
@@ -198,7 +211,44 @@ public class HomeView extends JFrame {
         btnSaveRequest = new JButton("Enregistrer livraison");
         btnSaveRequest.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                //
+                try {
+                    // Créer une instance de DocumentBuilderFactory pour créer un nouveau document XML
+                    DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
+                    // Créer un nouveau document XML
+                    Document doc = docBuilder.newDocument();
+
+                    // Créer un élément racine pour le document XML
+                    Element racine = doc.createElement("deliveries");
+                    doc.appendChild(racine);
+
+                    MapController.graphController.deliveriesXML.forEach((m) -> {
+                        // Créer un élément enfant pour la racine
+                        Element delivery = doc.createElement("delivery");
+                        racine.appendChild(delivery);
+
+                        // Ajouter un attribut à l'élément livre
+                        delivery.setAttribute("intersection-id",Long.toString(m.getIntersectionId()));
+                        delivery.setAttribute("courier-id",Long.toString(m.getCourierId()));
+                        delivery.setAttribute("start-time",Integer.toString(m.getStartTime()));
+                    });
+
+
+                    // Écrire le contenu du document XML dans un fichier
+                    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                    Transformer transformer = transformerFactory.newTransformer();
+                    DOMSource source = new DOMSource(doc);
+                    StreamResult result = new StreamResult(new File("backup.xml"));
+
+                    transformer.transform(source, result);
+
+                    System.out.println("Le fichier XML a été créé avec succès!");
+
+                } catch (ParserConfigurationException | TransformerException err) {
+                    err.printStackTrace();
+                }
             }
         });
         buttonPanel.add(btnSaveRequest);

@@ -180,7 +180,7 @@ public class GraphController {
                             DeliveryNode deliveryNode = entry.getKey();
                             Delivery delivery = deliveryNode.getDelivery();
                             //
-
+                            deliveriesXML.add(delivery);
                             if (delivery.getAddress() == warehouse.getAddress()) { // dépôt
                                 if (time.equals(LocalTime.of(8, 0, 0))) {
                                     System.out.println("Depart depot a 8h00");
